@@ -1,27 +1,35 @@
 import socket
+import threading
 
-# Create a socket object
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Get the local machine name
-host = "10.20.202.95"  # replace with your server's IP address
-port = 9999  # replace with your server's port
+host = "10.20.202.95"
+port = 9999
 
-# Bind to the port
 serversocket.bind((host, port))
 
-# Queue up to 5 requests
-serversocket.listen(5)
+serversocket.listen(2)
 
-# Establish a connection
-clientsocket1, addr1 = serversocket.accept()
-clientsocket2, addr2 = serversocket.accept()
+clients = []
 
-print("Got a connection from %s" % str(addr1))
-print("Got a connection from %s" % str(addr2))
 
-while True:
-    data = clientsocket1.recv(1024)
-    if not data:
-        break
-    clientsocket2.sendall(data)
+def receive_connection():
+    while True:
+        clientsocket, addr = serversocket.accept()
+        print(f"Got a connection from {str(addr)}")
+        clients.append(clientsocket)
+        if len(clients) == 2:
+            clients[0].sendall(b"start")  # Signal the sender to start recording
+            threading.Thread(target=send_message, args=(clients[0], clients[1])).start()
+
+
+def send_message(sender, reciever):
+    while True:
+        data = sender.recv(1024)
+        if not data:
+            break
+        reciever.sendall(data)
+    reciever.sendall(b"end")
+
+
+threading.Thread(target=receive_connection).start()
