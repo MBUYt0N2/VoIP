@@ -18,14 +18,17 @@ def receive_connection():
         clientsocket, addr = serversocket.accept()
         print(f"Got a connection from {str(addr)}")
         clients.append(clientsocket)
-        if len(clients) == 2:
+        if len(clients) % 2 == 0 and len(clients) != 0:
             clients[0].sendall(b"start")  # Signal the sender to start recording
-            threading.Thread(target=send_message, args=(clients[0], clients[1])).start()
+            threading.Thread(
+                target=send_message, args=(clients[-2], clients[-1])
+            ).start()
 
 
 def send_message(sender, reciever):
     while True:
         data = sender.recv(1024)
+        
         if not data:
             break
         reciever.sendall(data)

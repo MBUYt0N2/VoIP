@@ -20,12 +20,14 @@ def send_audio():
     sd.wait()
 
     print(myrecording.shape)
-
+    p = []
     for i in range(0, len(myrecording)): 
         data = myrecording[i].tobytes()
+        p.append(data)
         s.sendall(data)
 
     print("Recording finished.")
+    print(p)
 
 def receive_audio():
     while True:
@@ -34,8 +36,7 @@ def receive_audio():
             break
         frames.append(data)
 
-    x = random.randint(0, 100000)
-    wf = wave.open(f"output{x}.wav", "wb")
+    wf = wave.open("receiver.wav", "wb")
     wf.setnchannels(1)
     wf.setsampwidth(2)  
     wf.setframerate(44100)
