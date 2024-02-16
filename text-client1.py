@@ -3,7 +3,6 @@ import threading
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Replace 'server_ip_address' with the IP address of the server laptop
 host = "10.20.202.60"
 port = 9999
 
