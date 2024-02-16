@@ -31,7 +31,6 @@ def receive_conn():
             )
             threading.Thread(target=receive_message).start()
 
-
 def send_message(clientsocket, message):
     clientsocket.send(message)
 
