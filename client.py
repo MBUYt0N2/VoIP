@@ -2,7 +2,6 @@ import socket
 import wave
 import threading
 import sounddevice as sd
-import numpy as np
 import zdynamicip
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
