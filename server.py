@@ -4,7 +4,7 @@ import socket
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Get the local machine name
-host = "10.20.202.60"  # replace with your server's IP address
+host = "10.20.202.95"  # replace with your server's IP address
 port = 9999  # replace with your server's port
 
 # Bind to the port
