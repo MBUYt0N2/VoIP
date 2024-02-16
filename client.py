@@ -1,7 +1,6 @@
 import socket
 import wave
 import threading
-import random
 import sounddevice as sd
 import numpy as np
 
