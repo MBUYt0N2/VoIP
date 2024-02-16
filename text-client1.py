@@ -6,7 +6,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = "10.20.202.60"
 port = 9999
 
-
 def receive_message():
     while True:
         data = s.recv(1024)
