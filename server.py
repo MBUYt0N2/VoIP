@@ -1,9 +1,10 @@
 import socket
 import threading
+import zdynamicip
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = "10.20.202.95"
+host = zdynamicip.get_server_ip()
 port = 9999
 
 serversocket.bind((host, port))
