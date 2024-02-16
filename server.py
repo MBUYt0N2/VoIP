@@ -34,5 +34,4 @@ def send_message(sender, reciever):
         reciever.sendall(data)
     reciever.sendall(b"end")
 
-
 threading.Thread(target=receive_connection).start()
