@@ -12,7 +12,6 @@ serversocket.listen(2)
 
 clients = []
 
-
 def receive_connection():
     while True:
         clientsocket, addr = serversocket.accept()
