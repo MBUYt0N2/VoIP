@@ -1,38 +1,16 @@
-import pyaudio
-import wave
+import sounddevice as sd
+import soundfile as sf
 
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-CHUNK = 1024
-RECORD_SECONDS = 2
-WAVE_OUTPUT_FILENAME = "file.wav"
+samplerate = 44100  # Sample rate in Hertz
+duration = 3  # Duration in seconds
 
-# Initialize PyAudio
-
-# Start recording
-audio = pyaudio.PyAudio()
-stream = audio.open(
-    format=FORMAT, channels=CHANNELS, rate=RATE, input=True, input_device_index=3, frames_per_buffer=CHUNK
+# Record audio
+myrecording = sd.rec(
+    int(samplerate * duration), samplerate=samplerate, channels=1, dtype="float32"
 )
-print("recording...")
-frames = []
+sd.wait()  # Wait for the recording to finish
 
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
-    frames.append(data)
-print("finished recording")
+# Save to file
+sf.write("output.wav", myrecording, samplerate)
 
-# Stop recording
-stream.stop_stream()
-stream.close()
-audio.terminate()
-
-# Save recording as a .wav file
-waveFile = wave.open(WAVE_OUTPUT_FILENAME, "wb")
-waveFile.setnchannels(CHANNELS)
-waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-waveFile.setframerate(RATE)
-waveFile.writeframes(b"".join(frames))
-waveFile.close()
 
