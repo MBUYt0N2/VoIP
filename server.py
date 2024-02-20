@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 import socket
 import threading
 import zdynamicip
@@ -8,7 +9,7 @@ host = zdynamicip.get_server_ip()
 port = 9999
 
 serversocket.bind((host, port))
-
+print(f"Running on {host}")
 serversocket.listen(2)
 
 clients = []
