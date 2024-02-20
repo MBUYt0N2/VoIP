@@ -18,15 +18,11 @@ def send_audio():
                          channels=1, dtype='int16')
     sd.wait()
 
-    print(myrecording.shape)
-    p = []
     for i in range(0, len(myrecording)): 
         data = myrecording[i].tobytes()
-        p.append(data)
         s.sendall(data)
 
     print("Recording finished.")
-    print(p)
 
 def receive_audio():
     while True:
