@@ -12,5 +12,3 @@ def get_server_ip():
             break
     return serverip
 
-
-print(get_server_ip())
