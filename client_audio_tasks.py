@@ -26,17 +26,11 @@ def receive_audio(s):
         data = s.recv(1024)
         if data == b"end":
             break
-        frames.append(data)
+        # frames.append(data)
 
-    # wf = wave.open("receiver.wav", "wb")
-    # wf.setnchannels(1)
-    # wf.setsampwidth(2)
-    # wf.setframerate(44100)
-    # wf.writeframes(b"".join(frames))
-    # wf.close()
+        data_len = len(data)
+        if data_len % 2 != 0:
+            data += s.recv(1)  
 
-    # print("Output saved to output.wav.")
-
-    audio_data = b"".join(frames)
-    audio_array = np.frombuffer(audio_data, dtype=np.int16)
-    sd.play(audio_array, samplerate=44100)
+        audio_array = np.frombuffer(data, dtype=np.int16)
+        sd.play(audio_array, samplerate=44100)
