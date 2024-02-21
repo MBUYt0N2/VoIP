@@ -2,8 +2,9 @@ import subprocess
 
 
 def get_server_ip():
-    output = subprocess.check_output("ifconfig | grep 192.", shell=True).decode()
-    if output is None:
+    try:
+        output = subprocess.check_output("ifconfig | grep 192.", shell=True).decode()
+    except:
         output = subprocess.check_output("ifconfig | grep 10.", shell=True).decode()
     lines = output.split(" ")
     for i in lines:
@@ -12,3 +13,4 @@ def get_server_ip():
             break
     return serverip
 
+print(get_server_ip())
