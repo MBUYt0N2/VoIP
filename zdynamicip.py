@@ -18,11 +18,11 @@ def get_server_ip():
     elif os.name == "nt":
         output = subprocess.check_output("ipconfig", shell=True).decode()
         lines = output.split('\n')
-	flag = 0
+        flag = 0
         for line in lines:
-		if "Wi-Fi" in line:
-			flag = 1
-		if "IPv4 Address" in line and flag == 1:
-        	        serverip = line.split(":")[1].strip()
-                	return serverip
+            if "Wi-Fi" in line:
+                flag = 1
+            if "IPv4 Address" in line and flag == 1:
+                serverip = line.split(":")[1].strip()
+                return serverip
 
