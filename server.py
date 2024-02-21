@@ -31,7 +31,7 @@ def receive_connection():
         print(f"Got a connection from {str(addr)}")
         clients.append(clientsocket)
         if len(clients) % 2 == 0 and len(clients) != 0:
-            clients[0].sendall(b"start")  
+            clients[-2].sendall(b"start")  
             threading.Thread(
                 target=send_message, args=(clients[-2], clients[-1])
             ).start()
