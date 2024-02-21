@@ -2,6 +2,7 @@
 import socket
 import threading
 import zdynamicip
+import time
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -11,6 +12,16 @@ port = 9999
 serversocket.bind((host, port))
 print(f"Running on {host}")
 serversocket.listen(2)
+
+def broadcast_ip(ip):
+    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    server.settimeout(0.2)
+    server.bind(("", 44444))
+    while True:
+        server.sendto(ip.encode(), ('<broadcast>', 37020))
+        time.sleep(1)
+
 
 clients = []
 
@@ -36,3 +47,4 @@ def send_message(sender, reciever):
     reciever.sendall(b"end")
 
 threading.Thread(target=receive_connection).start()
+threading.Thread(target=broadcast_ip, args=(host,)).start()
