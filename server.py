@@ -35,7 +35,7 @@ def receive_connection():
             threading.Thread(
                 target=send_message, args=(clients[-2], clients[-1])
             ).start()
-
+            
 
 def send_message(sender, reciever):
     while True:
