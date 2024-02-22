@@ -30,7 +30,7 @@ def receive_audio(s):
 
         data_len = len(data)
         if data_len % 2 != 0:
-            data += s.recv(1)  
-
+            data += s.recv(1)
+        print("Playing")
         audio_array = np.frombuffer(data, dtype=np.int16)
         sd.play(audio_array, samplerate=44100)
