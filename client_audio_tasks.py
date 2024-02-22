@@ -30,7 +30,9 @@ def send_audio(s):
         data = indata.tobytes()
         s.sendall(data)
 
-    with sd.InputStream(callback=callback, channels=1, samplerate=samplerate, dtype='int16'):
+    with sd.InputStream(
+        callback=callback, channels=1, samplerate=samplerate, dtype="int16"
+    ):
         sd.sleep(duration * 1000)
 
     print("Recording finished.")
@@ -41,11 +43,12 @@ def receive_audio(s):
         data = s.recv(1024)
         if b"end" in data:
             break
-        # frames.append(data)
         data_len = len(data)
         if data_len % 2 != 0:
             data += s.recv(1)
         audio_array = np.frombuffer(data, dtype=np.int16)
+        print(audio_array[:5])
         sd.play(audio_array, samplerate=44100)
+        sd.wait()
         print("playing")
     print("done")

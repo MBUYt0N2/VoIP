@@ -23,8 +23,7 @@ def main():
         s.connect((host, port))
         data = s.recv(1024)
         if data == b"start":
-            ct.send_audio(s)
-        else:
+            threading.Thread(target=ct.send_audio, args=(s,)).start()
             threading.Thread(target=ct.receive_audio, args=(s,)).start()
 
     except ConnectionRefusedError:

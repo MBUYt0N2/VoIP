@@ -1,7 +1,7 @@
 # import socket
 
 # def receive_broadcast():
-#     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+#     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #     client.bind(("", 37020))
 #     while True:
 #         data, addr = client.recvfrom(1024)
@@ -13,17 +13,30 @@
 
 # # Rest of your code...
 
+import wave
+import numpy as np
 import sounddevice as sd
-import soundfile as sf
 
-def play_file(filename):
-    # Read file
-    data, samplerate = sf.read(filename, dtype='float32')
+
+def play_file():
+    # Open file
+    wav_file = wave.open("receiver.wav", "rb")
+
+    # Read frames and convert to float32
+    data = np.frombuffer(
+        wav_file.readframes(wav_file.getnframes()), dtype=np.int16
+    ).astype(np.float32)
+
+    # Get sample rate
+    samplerate = wav_file.getframerate()
 
     # Play file
     sd.play(data, samplerate)
 
     # Wait for the file to finish playing
-    sd.wait()
+    # sd.wait()
 
-play_file('receiver.wav')
+    # Close file
+    wav_file.close()
+
+
