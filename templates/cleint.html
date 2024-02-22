@@ -8,7 +8,7 @@
     $(document).ready(function(){
         $("#run-script").click(function(){
             $.post("/run-script", function(data, status){
-                alert("Data: " + data + "\nStatus: " + status);
+                console.log("Data: " + data + "\nStatus: " + status);
             });
         });
     });

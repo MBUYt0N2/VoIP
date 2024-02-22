@@ -21,7 +21,7 @@ def broadcast_ip(ip):
     server.bind(("", 44444))
     while True:
         server.sendto(ip.encode(), ("<broadcast>", 37020))
-        time.sleep(1)
+        time.sleep(2)
 
 
 clients = []
@@ -45,9 +45,13 @@ def send_message(*clients):
         if not data:
             break
         for i, receiver in enumerate(clients):
-            receiver.sendall(data[i])
+            if i == 0:
+                receiver.sendall(data[1])
+            else:
+                receiver.sendall(data[0])
     for receiver in clients:
         receiver.sendall(b"end")
+        receiver.close()
 
 
 threading.Thread(target=receive_connection).start()
