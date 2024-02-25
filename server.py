@@ -42,7 +42,7 @@ def send_message(*clients):
     while True:
         data = [sender.recv(1024) for sender in clients]
 
-        if not data:
+        if any(not d for d in data):
             break
         for i, receiver in enumerate(clients):
             if i == 0:
