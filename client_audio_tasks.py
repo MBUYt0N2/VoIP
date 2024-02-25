@@ -5,22 +5,6 @@ import numpy as np
 frames = []
 
 
-# def send_audio(s):
-#     samplerate = 44100
-#     duration = 5
-#     print("Recording...")
-#     myrecording = sd.rec(
-#         int(samplerate * duration), samplerate=samplerate, channels=1, dtype="int16"
-#     )
-#     sd.wait()
-
-#     for i in range(0, len(myrecording)):
-#         data = myrecording[i].tobytes()
-#         s.sendall(data)
-
-#     print("Recording finished.")
-
-
 def send_audio(s):
     samplerate = 44100
     duration = 5
