@@ -40,18 +40,16 @@ def receive_connection():
 
 def send_message(*clients):
     while True:
-        data = [sender.recv(1024) for sender in clients]
+        data0 = clients[0].recv(1024)
+        data1 = clients[1].recv(1024)
 
-        if any(not d for d in data):
-            break
-        for i, receiver in enumerate(clients):
-            if i == 0:
-                receiver.sendall(data[1])
-            else:
-                receiver.sendall(data[0])
-    for receiver in clients:
-        receiver.sendall(b"end")
-        receiver.close()
+        # if not data0 or not data1:
+        #     break
+        clients[1].sendall(data0)
+        clients[0].sendall(data1)
+    # for receiver in clients:
+    #     receiver.sendall(b"end")
+    #     receiver.close()
 
 
 threading.Thread(target=receive_connection).start()

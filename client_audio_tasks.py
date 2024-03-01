@@ -20,6 +20,7 @@ def send_audio(s):
         sd.sleep(duration * 1000)
 
     print("Recording finished.")
+    s.sendall(b"end")
 
 
 # def receive_audio(s):
