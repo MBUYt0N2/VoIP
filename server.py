@@ -39,17 +39,18 @@ def receive_connection():
 
 
 def send_message(*clients):
-    while True:
+    flag = False
+    while not flag:
         data0 = clients[0].recv(1024)
         data1 = clients[1].recv(1024)
 
-        # if not data0 or not data1:
-        #     break
+        if data0 == b"end" or data1 == b"end":
+            flag = True
         clients[1].sendall(data0)
         clients[0].sendall(data1)
     # for receiver in clients:
-    #     receiver.sendall(b"end")
-    #     receiver.close()
+        # receiver.sendall(b"end")
+        # receiver.close()
 
 
 threading.Thread(target=receive_connection).start()
