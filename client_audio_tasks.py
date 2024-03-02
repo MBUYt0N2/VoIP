@@ -9,7 +9,7 @@ audio_buffer = queue.Queue()
 
 def send_audio(s):
     samplerate = 44100
-    duration = 5
+    duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
