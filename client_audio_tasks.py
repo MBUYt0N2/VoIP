@@ -51,10 +51,11 @@ def receive_audio(s):
 
 def audio_callback(outdata, frames, time, status):
     global audio_buffer
-    if not audio_buffer.empty():
-        audio_array = audio_buffer.get()
-        outdata[:] = audio_array[:frames].reshape(-1, 1)
-        if len(audio_array) > frames:
-            audio_buffer.put(audio_array[frames:])
+    while audio_buffer.empty():
+        time.sleep(0.1)
+    audio_array = audio_buffer.get()
+    outdata[:] = audio_array[:frames].reshape(-1, 1)
+    if len(audio_array) > frames:
+        audio_buffer.put(audio_array[frames:])
     else:
         outdata.fill(0)
