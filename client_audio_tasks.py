@@ -33,6 +33,8 @@ def receive_audio(s):
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
     )
+
+    time.sleep(1)
     stream.start()
 
     while True:
