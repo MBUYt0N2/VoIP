@@ -2,6 +2,7 @@ import time
 import sounddevice as sd
 import numpy as np
 import queue
+import noisereduce as nr
 
 frames = []
 audio_buffer = queue.Queue()
@@ -46,7 +47,7 @@ def receive_audio(s):
             data += s.recv(1)
         audio_array = np.frombuffer(data, dtype=np.int16)
         print(f"audio array : {len(audio_array)}")
-
+        audio_array = nr.reduce_noise(audio_clip=audio_array, noise_clip=audio_array)
         audio_buffer.put(audio_array)
 
     print("done")
