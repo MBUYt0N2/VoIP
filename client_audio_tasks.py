@@ -55,7 +55,6 @@ def audio_callback(outdata, frames, time, status):
         audio_array = audio_buffer.get()
         outdata[:] = audio_array[:frames].reshape(-1, 1)
         if len(audio_array) > frames:
-            # Put the remaining frames back into the buffer
             audio_buffer.put(audio_array[frames:])
     else:
         outdata.fill(0)
