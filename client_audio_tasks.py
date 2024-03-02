@@ -27,7 +27,12 @@ def send_audio(s):
 
 def receive_audio(s):
     global audio_buffer
-    stream = sd.OutputStream(callback=audio_callback)
+    samplerate = 44100
+    dtype = "int16"
+    channels = 1
+    stream = sd.OutputStream(
+        callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
+    )
     stream.start()
 
     while True:
