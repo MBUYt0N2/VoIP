@@ -56,11 +56,15 @@ def receive_audio(s):
 
 def audio_callback(outdata, frames, time, status):
     global audio_buffer
-    if not audio_buffer.empty():
-        audio_array = audio_buffer.get()
-        print(f"queue :  {audio_buffer.qsize()}")
-        outdata[:] = audio_array[:frames].reshape(-1, 1)
-        if len(audio_array) > frames:
-            audio_buffer.put(audio_array[frames:])
-    else:
-        outdata.fill(0)
+    while len(outdata) > 0:
+        if not audio_buffer.empty():
+            audio_array = audio_buffer.get()
+            print(f"queue :  {audio_buffer.qsize()}")
+            chunk = min(len(outdata), len(audio_array))
+            outdata[:chunk] = audio_array[:chunk].reshape(-1, 1)
+            outdata = outdata[chunk:]
+            if len(audio_array) > chunk:
+                audio_buffer.put(audio_array[chunk:])
+        else:
+            outdata.fill(0)
+            break
