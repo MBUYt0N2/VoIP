@@ -1,8 +1,10 @@
+import time
 import sounddevice as sd
 import numpy as np
 import queue
 
 frames = []
+audio_buffer = queue.Queue()
 
 
 def send_audio(s):
@@ -23,25 +25,8 @@ def send_audio(s):
     s.sendall(b"end")
 
 
-# def receive_audio(s):
-#     while True:
-#         data = s.recv(1024)
-#         if b"end" in data:
-#             break
-#         data_len = len(data)
-#         if data_len % 2 != 0:
-#             data += s.recv(1)
-#         audio_array = np.frombuffer(data, dtype=np.int16)
-#         print(audio_array[:5])
-#         sd.play(audio_array, samplerate=44100)
-#         sd.wait()
-#         print("playing")
-#     print("done")
-
-
 def receive_audio(s):
-    audio_buffer = queue.Queue()
-
+    global audio_buffer
     stream = sd.OutputStream(callback=audio_callback)
     stream.start()
 
@@ -59,37 +44,18 @@ def receive_audio(s):
 
     print("done")
 
-    # Stop the stream after all audio has been played
+    time.sleep(5)
+
     stream.stop()
-    with open("output.json", "w") as f:
-        while not audio_buffer.empty():
-            i = audio_buffer.get()
-            f.write("key : "  + str(i) + "\n")
 
 
-def audio_callback(outdata, audio_buffer):
+def audio_callback(outdata, frames, time, status):
+    global audio_buffer
     if not audio_buffer.empty():
-        sd.play(audio_buffer, samplerate=44100)
-        sd.wait()
-        outdata[:] = audio_buffer.get().reshape(-1, 1)
+        audio_array = audio_buffer.get()
+        outdata[:] = audio_array[:frames].reshape(-1, 1)
+        if len(audio_array) > frames:
+            # Put the remaining frames back into the buffer
+            audio_buffer.put(audio_array[frames:])
     else:
-        outdata.fill(0) 
-
-
-# def receive_audio(s):
-#     audio_data = b""
-#     while True:
-#         data = s.recv(1024)
-#         if b"end" in data:
-#             break
-#         data_len = len(data)
-#         if data_len % 2 != 0:
-#             data += s.recv(1)
-#         audio_data += data
-#     print("done")
-#     a = random.randint(1, 100)
-#     with wave.open(f"output{a}.wav", "wb") as wav_file:
-#         wav_file.setnchannels(1)
-#         wav_file.setsampwidth(2)  # 2 bytes for int16
-#         wav_file.setframerate(44100)
-#         wav_file.writeframes(audio_data)
+        outdata.fill(0)
