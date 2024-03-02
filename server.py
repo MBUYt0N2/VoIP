@@ -48,9 +48,9 @@ def send_message(*clients):
             flag = True
         clients[1].sendall(data0)
         clients[0].sendall(data1)
-    # for receiver in clients:
-        # receiver.sendall(b"end")
-        # receiver.close()
+    clients[1].sendall(b"end")
+    clients[0].sendall(b"end")
+
 
 
 threading.Thread(target=receive_connection).start()
