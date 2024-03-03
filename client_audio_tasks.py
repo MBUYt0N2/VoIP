@@ -39,7 +39,6 @@ def receive_audio(s):
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
     )
 
-    time.sleep(1)
     stream.start()
 
     while True:
