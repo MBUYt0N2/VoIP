@@ -2,4 +2,5 @@ flask==3.0.2
 flask-cors==4.0.0
 sounddevice==0.4.6
 wave
-
+numpy==1.24.3
+webrtcvad==2.0.10
