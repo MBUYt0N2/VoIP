@@ -4,3 +4,4 @@ sounddevice==0.4.6
 wave
 numpy==1.24.3
 webrtcvad==2.0.10
+scipy===1.12.0
