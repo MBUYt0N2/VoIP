@@ -2,13 +2,18 @@ import time
 import sounddevice as sd
 import numpy as np
 import queue
+import webrtcvad
+from scipy.signal import resample
+import librosa
 
 frames = []
 audio_buffer = queue.Queue()
+vad = webrtcvad.Vad()
+vad.set_mode(1)
 
 
 def send_audio(s):
-    samplerate = 44100
+    samplerate = 48000
     duration = 50
     print("Recording...")
 
@@ -27,7 +32,7 @@ def send_audio(s):
 
 def receive_audio(s):
     global audio_buffer
-    samplerate = 44100
+    samplerate = 48000
     dtype = "int16"
     channels = 1
     stream = sd.OutputStream(
@@ -46,7 +51,16 @@ def receive_audio(s):
             data += s.recv(1)
         audio_array = np.frombuffer(data, dtype=np.int16)
         print(f"audio array : {len(audio_array)}")
-        audio_buffer.put(audio_array)
+
+        pad_size = 480 - (len(audio_array) % 480)
+        audio_array = np.pad(audio_array, (0, pad_size))
+        audio_frames = audio_array.reshape(-1, 480).tolist()
+        audio_frames = [
+            frame
+            for frame in audio_frames
+            if vad.is_speech(np.array(frame, dtype=np.int16).tobytes(), samplerate)
+        ]
+        audio_buffer.put(np.array(audio_frames).flatten())
 
     print("done")
 
