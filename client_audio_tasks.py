@@ -28,19 +28,17 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
 
 
 def send_audio(s):
-    samplerate = 48000
+    samplerate = 96000
     duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.flatten()  # Convert to 1D array for filtering
-        filtered_data = butter_bandpass_filter(data, lowcut, highcut, samplerate)
-        filtered_data_bytes = filtered_data.tobytes()  # Convert back to bytes
-        s.sendall(filtered_data_bytes)
+        data = indata.tobytes()  # Convert to 1D array for filtering
+        s.sendall(data)
 
 
     with sd.InputStream(
-        callback=callback, channels=1, samplerate=samplerate, dtype="int16"
+        callback=callback, channels=1, samplerate=samplerate, dtype="float32"
     ):
         sd.sleep(duration * 1000)
 
@@ -50,8 +48,8 @@ def send_audio(s):
 
 def receive_audio(s):
     global audio_buffer
-    samplerate = 48000
-    dtype = "int16"
+    samplerate = 96000
+    dtype = "float32"
     channels = 1
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
@@ -66,16 +64,21 @@ def receive_audio(s):
         data_len = len(data)
         if data_len % 2 != 0:
             data += s.recv(1)
-        audio_array = np.frombuffer(data, dtype=np.int16)
+        audio_array = np.frombuffer(data, dtype=np.float32)
         print(f"audio array : {len(audio_array)}")
 
         pad_size = 480 - (len(audio_array) % 480)
         audio_array = np.pad(audio_array, (0, pad_size))
         audio_frames = audio_array.reshape(-1, 480).tolist()
+        # audio_frames = [
+        #     frame
+        #     for frame in audio_frames
+        #     if vad.is_speech(np.array(frame, dtype=np.float32).tobytes(), samplerate)
+        # ]
+
         audio_frames = [
-            frame
+            butter_bandpass_filter(np.array(frame), lowcut, highcut, samplerate)
             for frame in audio_frames
-            if vad.is_speech(np.array(frame, dtype=np.int16).tobytes(), samplerate)
         ]
         audio_buffer.put(np.array(audio_frames).flatten())
 
