@@ -1,15 +1,30 @@
-import time
 import sounddevice as sd
 import numpy as np
 import queue
 import webrtcvad
-from scipy.signal import resample
-import librosa
+from scipy.signal import butter, lfilter
 
 frames = []
 audio_buffer = queue.Queue()
 vad = webrtcvad.Vad()
 vad.set_mode(1)
+lowcut = 300  
+highcut = 3000
+
+
+def butter_bandpass(lowcut, highcut, fs, order=4):
+    nyquist = 0.5 * fs
+    low = lowcut / nyquist
+    high = highcut / nyquist
+    b, a = butter(order, [low, high], btype="band")
+    return b, a
+
+
+# Apply the band-pass filter to the incoming audio data
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
 
 
 def send_audio(s):
@@ -18,8 +33,11 @@ def send_audio(s):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes()
-        s.sendall(data)
+        data = indata.flatten()  # Convert to 1D array for filtering
+        filtered_data = butter_bandpass_filter(data, lowcut, highcut, samplerate)
+        filtered_data_bytes = filtered_data.tobytes()  # Convert back to bytes
+        s.sendall(filtered_data_bytes)
+
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
