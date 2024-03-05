@@ -10,7 +10,7 @@ audio_buffer = queue.Queue()
 
 def opus_encode(audio_data):
     encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
-    encoded_data = encoder.encode(audio_data.tobytes(), 960)
+    encoded_data = encoder.encode(audio_data.tobytes(), 480)
     return encoded_data
 
 
@@ -20,7 +20,7 @@ def opus_decode(encoded_data, decoder, frame_size):
 
 
 def send_audio(s):
-    samplerate = 96000
+    samplerate = 48000
     duration = 50
     print("Recording...")
 
@@ -39,10 +39,10 @@ def send_audio(s):
 
 def receive_audio(s):
     global audio_buffer
-    samplerate = 96000
+    samplerate = 48000
     dtype = "float32"
     channels = 1
-    framesize = 960
+    framesize = 480
     opus_decoder = opuslib.Decoder(samplerate, channels)
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
