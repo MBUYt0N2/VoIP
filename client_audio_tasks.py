@@ -1,12 +1,11 @@
 import sounddevice as sd
 import numpy as np
 import queue
-import opuslib
+import pydub
 
 frames = []
 audio_buffer = queue.Queue()
-opus_encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
-opus_decoder = opuslib.Decoder(48000, 1)
+
 
 def send_audio(s):
     samplerate = 48000
@@ -14,11 +13,12 @@ def send_audio(s):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = opus_encoder.encode(indata[:, 0], frame_size=480)
-        s.sendall(data)
+        data = indata.tobytes()
+        encoded_audio = pydub.AudioSegment(data, frame_rate=48000, sample_width=2, channels=1)
+        s.sendall(encoded_audio.raw_data)
 
     with sd.InputStream(
-        callback=callback, channels=1, samplerate=samplerate, dtype="float32"
+        callback=callback, channels=1, samplerate=samplerate, dtype="int16"
     ):
         sd.sleep(duration * 1000)
 
@@ -29,7 +29,7 @@ def send_audio(s):
 def receive_audio(s):
     global audio_buffer
     samplerate = 48000
-    dtype = "float32"
+    dtype = "int16"
     channels = 1
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
@@ -37,23 +37,34 @@ def receive_audio(s):
 
     stream.start()
 
+    # while True:
+    #     data = s.recv(4096)
+    #     if b"end" in data:
+    #         break
+    #     data_len = len(data)
+    #     if data_len % 2 != 0:
+    #         data += s.recv(1)
+
+    #     audio_array = np.frombuffer(data, dtype=np.float32)
+    #     print(f"audio array : {len(audio_array)}")
+
+    #     pad_size = 480 - (len(audio_array) % 480)
+    #     audio_array = np.pad(audio_array, (0, pad_size))
+    #     audio_frames = audio_array.reshape(-1, 480).tolist()
+
+    #     audio_buffer.put(np.array(audio_frames).flatten())
+
     while True:
         data = s.recv(4096)
         if b"end" in data:
             break
-        data_len = len(data)
-        if data_len % 2 != 0:
-            data += s.recv(1)
 
-        data = opus_decoder.decode(data, frame_size=480)
-        audio_array = np.frombuffer(data, dtype=np.float32)
-        print(f"audio array : {len(audio_array)}")
+        # Decode G.711 encoded audio
+        g711_encoded_audio = pydub.AudioSegment(data, frame_rate=samplerate, sample_width=2, channels=1)
+        decoded_audio = np.frombuffer(g711_encoded_audio.raw_data, dtype=np.int16)
 
-        pad_size = 480 - (len(audio_array) % 480)
-        audio_array = np.pad(audio_array, (0, pad_size))
-        audio_frames = audio_array.reshape(-1, 480).tolist()
+        audio_buffer.put(decoded_audio)
 
-        audio_buffer.put(np.array(audio_frames).flatten())
 
     print("done")
 
