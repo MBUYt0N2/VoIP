@@ -7,7 +7,7 @@ def receive_broadcast():
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client.bind(("", 37020))
     while True:
-        data, addr = client.recvfrom(1024)
+        data, addr = client.recvfrom(4096)
         if data:
             return data.decode()
 
@@ -21,7 +21,7 @@ def main():
 
     try:
         s.connect((host, port))
-        data = s.recv(1024)
+        data = s.recv(4096)
         if data == b"start":
             threading.Thread(target=ct.send_audio, args=(s,)).start()
             threading.Thread(target=ct.receive_audio, args=(s,)).start()

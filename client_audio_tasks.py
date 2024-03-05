@@ -1,10 +1,22 @@
 import sounddevice as sd
 import numpy as np
 import queue
+import opuslib
 
 
 frames = []
 audio_buffer = queue.Queue()
+
+
+def opus_encode(audio_data):
+    encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
+    encoded_data = encoder.encode(audio_data.tobytes(), 960)
+    return encoded_data
+
+
+def opus_decode(encoded_data, decoder, frame_size):
+    decoded_data = decoder.decode(encoded_data, frame_size)
+    return np.frombuffer(decoded_data, dtype=np.float32)
 
 
 def send_audio(s):
@@ -13,7 +25,7 @@ def send_audio(s):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes() 
+        data = opus_encode(indata[:, 0])
         s.sendall(data)
 
     with sd.InputStream(
@@ -30,6 +42,8 @@ def receive_audio(s):
     samplerate = 96000
     dtype = "float32"
     channels = 1
+    framesize = 960
+    opus_decoder = opuslib.Decoder(samplerate, channels)
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
     )
@@ -37,20 +51,22 @@ def receive_audio(s):
     stream.start()
 
     while True:
-        data = s.recv(1024)
+        data = s.recv(4096)
         if b"end" in data:
             break
         data_len = len(data)
         if data_len % 2 != 0:
             data += s.recv(1)
-        audio_array = np.frombuffer(data, dtype=np.float32)
+
+        audio_array = opus_decode(data, opus_decoder, framesize)
+        # audio_array = np.frombuffer(data, dtype=np.float32)
         print(f"audio array : {len(audio_array)}")
 
-        pad_size = 480 - (len(audio_array) % 480)
-        audio_array = np.pad(audio_array, (0, pad_size))
-        audio_frames = audio_array.reshape(-1, 480).tolist()
+        # pad_size = 480 - (len(audio_array) % 480)
+        # audio_array = np.pad(audio_array, (0, pad_size))
+        # audio_frames = audio_array.reshape(-1, 480).tolist()
 
-        audio_buffer.put(np.array(audio_frames).flatten())
+        audio_buffer.put(np.array(audio_array).flatten())
 
     print("done")
 
