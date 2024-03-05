@@ -1,30 +1,10 @@
 import sounddevice as sd
 import numpy as np
 import queue
-import webrtcvad
-from scipy.signal import butter, lfilter
+
 
 frames = []
 audio_buffer = queue.Queue()
-vad = webrtcvad.Vad()
-vad.set_mode(1)
-lowcut = 300  
-highcut = 3000
-
-
-def butter_bandpass(lowcut, highcut, fs, order=4):
-    nyquist = 0.5 * fs
-    low = lowcut / nyquist
-    high = highcut / nyquist
-    b, a = butter(order, [low, high], btype="band")
-    return b, a
-
-
-# Apply the band-pass filter to the incoming audio data
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
 
 
 def send_audio(s):
@@ -33,9 +13,8 @@ def send_audio(s):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes()  # Convert to 1D array for filtering
+        data = indata.tobytes() 
         s.sendall(data)
-
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="float32"
@@ -70,16 +49,7 @@ def receive_audio(s):
         pad_size = 480 - (len(audio_array) % 480)
         audio_array = np.pad(audio_array, (0, pad_size))
         audio_frames = audio_array.reshape(-1, 480).tolist()
-        # audio_frames = [
-        #     frame
-        #     for frame in audio_frames
-        #     if vad.is_speech(np.array(frame, dtype=np.float32).tobytes(), samplerate)
-        # ]
 
-        audio_frames = [
-            butter_bandpass_filter(np.array(frame), lowcut, highcut, samplerate)
-            for frame in audio_frames
-        ]
         audio_buffer.put(np.array(audio_frames).flatten())
 
     print("done")
