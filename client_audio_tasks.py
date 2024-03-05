@@ -8,24 +8,13 @@ frames = []
 audio_buffer = queue.Queue()
 
 
-def opus_encode(audio_data):
-    encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
-    encoded_data = encoder.encode(audio_data.tobytes(), 480)
-    return encoded_data
-
-
-def opus_decode(encoded_data, decoder, frame_size):
-    decoded_data = decoder.decode(encoded_data, frame_size)
-    return np.frombuffer(decoded_data, dtype=np.float32)
-
-
 def send_audio(s):
     samplerate = 48000
     duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = opus_encode(indata[:, 0])
+        data = indata.tobytes()
         s.sendall(data)
 
     with sd.InputStream(
@@ -58,15 +47,14 @@ def receive_audio(s):
         if data_len % 2 != 0:
             data += s.recv(1)
 
-        audio_array = opus_decode(data, opus_decoder, framesize)
-        # audio_array = np.frombuffer(data, dtype=np.float32)
+        audio_array = np.frombuffer(data, dtype=np.float32)
         print(f"audio array : {len(audio_array)}")
 
-        # pad_size = 480 - (len(audio_array) % 480)
-        # audio_array = np.pad(audio_array, (0, pad_size))
-        # audio_frames = audio_array.reshape(-1, 480).tolist()
+        pad_size = 480 - (len(audio_array) % 480)
+        audio_array = np.pad(audio_array, (0, pad_size))
+        audio_frames = audio_array.reshape(-1, 480).tolist()
 
-        audio_buffer.put(np.array(audio_array).flatten())
+        audio_buffer.put(np.array(audio_frames).flatten())
 
     print("done")
 
