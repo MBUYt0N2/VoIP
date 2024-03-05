@@ -3,4 +3,3 @@ flask-cors==4.0.0
 sounddevice==0.4.6
 numpy==1.24.3
 scipy===1.12.0
-opuslib==3.0.1

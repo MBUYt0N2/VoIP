@@ -3,10 +3,10 @@ import numpy as np
 import queue
 import opuslib
 
-
 frames = []
 audio_buffer = queue.Queue()
-
+opus_encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
+opus_decoder = opuslib.Decoder(48000, 1)
 
 def send_audio(s):
     samplerate = 48000
@@ -14,7 +14,7 @@ def send_audio(s):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes()
+        data = opus_encoder.encode(indata[:, 0], frame_size=480)
         s.sendall(data)
 
     with sd.InputStream(
@@ -31,8 +31,6 @@ def receive_audio(s):
     samplerate = 48000
     dtype = "float32"
     channels = 1
-    framesize = 480
-    opus_decoder = opuslib.Decoder(samplerate, channels)
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
     )
@@ -47,6 +45,7 @@ def receive_audio(s):
         if data_len % 2 != 0:
             data += s.recv(1)
 
+        data = opus_decoder.decode(data, frame_size=480)
         audio_array = np.frombuffer(data, dtype=np.float32)
         print(f"audio array : {len(audio_array)}")
 
