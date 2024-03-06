@@ -8,13 +8,13 @@ audio_buffer = queue.Queue()
 
 
 def send_audio(s):
-    samplerate = 48000
+    samplerate = 96000
     duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
         data = indata.tobytes()
-        encoded_audio = pydub.AudioSegment(data, frame_rate=48000, sample_width=2, channels=1)
+        encoded_audio = pydub.AudioSegment(data, frame_rate=96000, sample_width=2, channels=1)
         s.sendall(encoded_audio.raw_data)
 
     with sd.InputStream(
@@ -28,7 +28,7 @@ def send_audio(s):
 
 def receive_audio(s):
     global audio_buffer
-    samplerate = 48000
+    samplerate = 96000
     dtype = "int16"
     channels = 1
     stream = sd.OutputStream(
