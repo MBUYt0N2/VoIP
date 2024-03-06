@@ -41,8 +41,8 @@ def receive_connection():
 def send_message(*clients):
     flag = False
     while not flag:
-        data0 = clients[0].recv(4096)
-        data1 = clients[1].recv(4096)
+        data0 = clients[0].recv(16384)
+        data1 = clients[1].recv(16384)
 
         if data0 == b"end" or data1 == b"end":
             flag = True
