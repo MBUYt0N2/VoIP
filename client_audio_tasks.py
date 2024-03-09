@@ -42,9 +42,8 @@ def receive_audio(s):
         if b"end" in data:
             break
 
-        # Decode G.711 encoded audio
-        g711_encoded_audio = pydub.AudioSegment(data, frame_rate=samplerate, sample_width=2, channels=1)
-        decoded_audio = np.frombuffer(g711_encoded_audio.raw_data, dtype=np.int16)
+        encoded_audio = pydub.AudioSegment(data, frame_rate=samplerate, sample_width=2, channels=1)
+        decoded_audio = np.frombuffer(encoded_audio.raw_data, dtype=np.int16)
 
         audio_buffer.put(decoded_audio)
 

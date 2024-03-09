@@ -5,9 +5,9 @@ def get_server_ip():
 
     if os.name == "posix":
         try:
-            output = subprocess.check_output("ifconfig | grep -Eo '192\.168\.[0-9]+\.[0-9]+'", shell=True).decode()
+            output = subprocess.check_output(r"ifconfig | grep '192\.168\.[0-9]+\.[0-9]+'", shell=True).decode()
         except:
-            output = subprocess.check_output("ifconfig | grep -Eo 10\.[0-9]+\.[0-9]+\.[0-9]+", shell=True).decode()
+            output = subprocess.check_output(r"ifconfig | grep -Eo 10\.[0-9]+\.[0-9]+\.[0-9]+", shell=True).decode()
         lines = output.split("\n")
         for i in lines:
             if "192." in i or "10." in i:
