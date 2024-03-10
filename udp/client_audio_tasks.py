@@ -29,7 +29,7 @@ def send_audio(s, host, port):
 
 
 def receive_audio(s, host, port):
-    s.bind((host, port))
+    s.bind(("", 0))
     global audio_buffer
     samplerate = 96000
     dtype = "int16"
@@ -45,7 +45,6 @@ def receive_audio(s, host, port):
         if b"end" in data:
             break
 
-        # Decode G.711 encoded audio
         g711_encoded_audio = pydub.AudioSegment(
             data, frame_rate=samplerate, sample_width=2, channels=1
         )
