@@ -9,6 +9,7 @@ def receive_broadcast():
     while True:
         data, addr = client.recvfrom(16384)
         if data:
+            print("received broadcast")
             return data.decode()
 
 
