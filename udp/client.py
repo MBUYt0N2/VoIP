@@ -14,15 +14,15 @@ def receive_broadcast():
 
 def main():
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
     host = receive_broadcast()
     port = 9999
 
     try:
-        s.connect((host, port))
-        data = s.recv(16384)
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_socket.sendto(b'hello', (host, port))
+
+        data, addr = udp_socket.recvfrom(1024)
+
         threading.Thread(
             target=ct.send_audio, args=(udp_socket, socket.inet_ntoa(data), port)
         ).start()

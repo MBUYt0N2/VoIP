@@ -4,7 +4,7 @@ import threading
 import zdynamicip
 import time
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 host = zdynamicip.get_server_ip()
 port = 9999
@@ -29,15 +29,12 @@ clients = []
 
 def receive_connection():
     while True:
-        clientsocket, addr = serversocket.accept()
+        data, addr = serversocket.recvfrom(1024)
         print(f"Got a connection from {str(addr)}")
-        clients.append((clientsocket, addr[0]))
+        clients.append(addr)
         if len(clients) >= 2:
             for client in clients:
-                client[0].sendall(socket.inet_aton(addr[0]))
-
-
-        
+                serversocket.sendto(socket.inet_aton(addr[0]), client)
 
 
 threading.Thread(target=receive_connection).start()

@@ -29,7 +29,7 @@ def send_audio(s, host, port):
 
 
 def receive_audio(s, host, port):
-    s.bind(("", 0))
+    s.bind(('', 0))
     global audio_buffer
     samplerate = 96000
     dtype = "int16"
