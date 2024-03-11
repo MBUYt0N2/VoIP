@@ -2,6 +2,7 @@ import sounddevice as sd
 import numpy as np
 import queue
 import pydub
+import socket
 
 frames = []
 audio_buffer = queue.Queue()
@@ -28,8 +29,9 @@ def send_audio(s, host, port):
     s.sendall(b"end")
 
 
-def receive_audio(s, host, port):
-    s.bind(('', 50000))
+def receive_audio(s1, host, port):
+    s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s1.bind(('', 50000))   
     global audio_buffer
     samplerate = 96000
     dtype = "int16"
@@ -41,7 +43,7 @@ def receive_audio(s, host, port):
     stream.start()
 
     while True:
-        data, addr = s.recvfrom(16384)
+        data, addr = s1.recvfrom(16384)
         if b"end" in data:
             break
 
