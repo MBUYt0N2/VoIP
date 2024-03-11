@@ -31,7 +31,7 @@ def receive_connection():
     while True:
         data, addr = serversocket.recvfrom(1024)
         print(f"Got a connection from {str(addr)}")
-        current_ip = socket.inet_ntoa(addr[0])
+        current_ip = addr[0]
         ips.append(current_ip)
         clients[current_ip] = [ip for ip in ips if ip != current_ip]
         if len(clients) >= 2:
