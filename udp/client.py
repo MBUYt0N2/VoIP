@@ -29,17 +29,14 @@ def main():
                 ip_addresses = data.decode().split(",")
                 if ip_addresses:
                     break
-
-            print(ip_addresses)
+            data = ip_addresses[0]
+            threading.Thread(
+                target=ct.send_audio, args=(udp_socket, data, 9000)
+            ).start()
+            threading.Thread(target=ct.receive_audio, args=(udp_socket, data, 9000)).start()
 
         threading.Thread(target=listen_for_data).start()
         udp_socket.sendto(b'hello', (host, port))
-
-        data = ip_addresses[0]
-        threading.Thread(
-            target=ct.send_audio, args=(udp_socket, data, 9000)
-        ).start()
-        threading.Thread(target=ct.receive_audio, args=(udp_socket, data, 9000)).start()
 
     except ConnectionRefusedError:
         print("Connection failed. Is the server running?")
