@@ -23,17 +23,21 @@ def broadcast_ip(ip):
         time.sleep(2)
 
 
-clients = []
+clients = {}
+ips = []
 
 
 def receive_connection():
     while True:
         data, addr = serversocket.recvfrom(1024)
         print(f"Got a connection from {str(addr)}")
-        clients.append(addr)
+        current_ip = socket.inet_ntoa(addr)
+        ips.append(current_ip)
+        clients[current_ip] = [ip for ip in ips if ip != current_ip]
         if len(clients) >= 2:
             for client in clients:
-                serversocket.sendto(socket.inet_aton(client[0]), client)
+                for ip in clients[client]:
+                    serversocket.sendto(ip, client)
 
 
 threading.Thread(target=receive_connection).start()
