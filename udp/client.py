@@ -35,10 +35,11 @@ def main():
         threading.Thread(target=listen_for_data).start()
         udp_socket.sendto(b'hello', (host, port))
 
-        # threading.Thread(
-        #     target=ct.send_audio, args=(udp_socket, data, port)
-        # ).start()
-        # threading.Thread(target=ct.receive_audio, args=(udp_socket, data, port)).start()
+        data = ip_addresses[0]
+        threading.Thread(
+            target=ct.send_audio, args=(udp_socket, data, 9000)
+        ).start()
+        threading.Thread(target=ct.receive_audio, args=(udp_socket, data, 9000)).start()
 
     except ConnectionRefusedError:
         print("Connection failed. Is the server running?")

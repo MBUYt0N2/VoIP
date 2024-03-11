@@ -31,7 +31,7 @@ def send_audio(s, host, port):
 
 def receive_audio(s1, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s1.bind(('', 50000))   
+    s1.bind((host, port))   
     global audio_buffer
     samplerate = 96000
     dtype = "int16"
