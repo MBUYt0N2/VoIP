@@ -33,7 +33,7 @@ def receive_connection():
         print(f"Got a connection from {str(addr)}")
         current_ip = addr
         ips.append(current_ip)
-        if len(clients) >= 2:
+        if len(ips) >= 2:
             for i in ips:
                 clients[i] = [ip[0] for ip in ips if ip != i]
             print(clients)
