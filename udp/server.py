@@ -33,7 +33,7 @@ def receive_connection():
         clients.append(addr)
         if len(clients) >= 2:
             for client in clients:
-                serversocket.sendto(socket.inet_aton(addr[0]), client)
+                serversocket.sendto(socket.inet_aton(client[0]), client)
 
 
 threading.Thread(target=receive_connection).start()
