@@ -23,7 +23,7 @@ def main():
         udp_socket.sendto(b'hello', (host, port))
 
         data, addr = udp_socket.recvfrom(1024)
-        print(socket.inet_ntoa(data.decode()))
+        print(data.decode())
 
         threading.Thread(
             target=ct.send_audio, args=(udp_socket, socket.inet_ntoa(data), port)
