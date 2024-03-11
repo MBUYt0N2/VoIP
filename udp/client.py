@@ -26,12 +26,12 @@ def main():
         def listen_for_data():
             nonlocal ip_addresses
             while True:
-                if ip_addresses:
-                    break
                 data, addr = udp_socket.recvfrom(1024)
                 ip_addresses = data.decode().split(",")
                 if "" in ip_addresses:
                     ip_addresses.remove("")
+                if ip_addresses:
+                    break
 
             print(ip_addresses)
 
