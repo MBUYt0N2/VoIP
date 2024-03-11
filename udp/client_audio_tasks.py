@@ -26,8 +26,6 @@ def send_audio(s, host, port):
         sd.sleep(duration * 1000)
 
     print("Recording finished.")
-    s.sendall(b"end")
-
 
 def receive_audio(s1, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -53,6 +51,7 @@ def receive_audio(s1, host, port):
         decoded_audio = np.frombuffer(g711_encoded_audio.raw_data, dtype=np.int16)
 
         audio_buffer.put(decoded_audio)
+        print(decoded_audio[:5])
 
     print("done")
 
