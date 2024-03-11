@@ -41,5 +41,6 @@ def receive_connection():
                     serversocket.sendto(",".join(clients[client]).encode(), client)
 
 
-threading.Thread(target=receive_connection).start()
 threading.Thread(target=broadcast_ip, args=(host,)).start()
+threading.Thread(target=receive_connection).start()
+
