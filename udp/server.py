@@ -36,7 +36,6 @@ def receive_connection():
         if len(ips) >= 2:
             for i in ips:
                 clients[i] = [ip[0] for ip in ips if ip != i]
-            print(clients)
             for client in clients:
                 if clients[client]:
                     serversocket.sendto(",".join(clients[client]).encode(), client)
