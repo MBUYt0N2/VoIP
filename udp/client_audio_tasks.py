@@ -26,6 +26,7 @@ def send_audio(s, host, port):
         sd.sleep(duration * 1000)
 
     print("Recording finished.")
+    s.sendto(b"end", (host, port))
 
 def receive_audio(s1, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -42,7 +43,8 @@ def receive_audio(s1, host, port):
 
     while True:
         data, addr = s1.recvfrom(16384)
-
+        if data == b"end":
+            break
         g711_encoded_audio = pydub.AudioSegment(
             data, frame_rate=samplerate, sample_width=2, channels=1
         )
