@@ -37,7 +37,7 @@ def receive_connection():
         if len(clients) >= 2:
             for client in clients:
                 for ip in clients[client]:
-                    serversocket.sendto(ip, client)
+                    serversocket.sendto(ip.encode(), client)
 
 
 threading.Thread(target=receive_connection).start()
