@@ -30,6 +30,9 @@ def main():
                     break
                 data, addr = udp_socket.recvfrom(1024)
                 ip_addresses = data.decode().split(",")
+                if "" in ip_addresses:
+                    ip_addresses.remove("")
+
             print(ip_addresses)
 
         threading.Thread(target=listen_for_data).start()
