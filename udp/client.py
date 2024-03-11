@@ -22,14 +22,14 @@ def main():
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         udp_socket.sendto(b'hello', (host, port))
 
-        ip_addresses = ""
+        ip_addresses = None
         def listen_for_data(ip_addresses):
             while True:
                 if ip_addresses:
                     break
                 data, addr = udp_socket.recvfrom(1024)
                 ip_addresses = data.decode().split(",")
-                print(ip_addresses)
+            print(ip_addresses)
 
         threading.Thread(target=listen_for_data, args=(ip_addresses,)).start()
 
