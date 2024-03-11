@@ -31,10 +31,11 @@ def receive_connection():
     while True:
         data, addr = serversocket.recvfrom(1024)
         print(f"Got a connection from {str(addr)}")
-        current_ip = addr[0]
+        current_ip = addr
         ips.append(current_ip)
-        clients[addr] = [ip for ip in ips if ip != current_ip]
         if len(clients) >= 2:
+            for i in ips:
+                clients[i] = [ip[0] for ip in ips if ip != i]
             for client in clients:
                 if clients[client]:
                     serversocket.sendto(",".join(clients[client]).encode(), client)
