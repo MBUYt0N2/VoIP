@@ -27,8 +27,6 @@ def main():
             while True:
                 data, addr = udp_socket.recvfrom(1024)
                 ip_addresses = data.decode().split(",")
-                if "" in ip_addresses:
-                    ip_addresses.remove("")
                 if ip_addresses:
                     break
 
