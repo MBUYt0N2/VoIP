@@ -42,8 +42,6 @@ def receive_audio(s1, host, port):
 
     while True:
         data, addr = s1.recvfrom(16384)
-        if b"end" in data:
-            break
 
         g711_encoded_audio = pydub.AudioSegment(
             data, frame_rate=samplerate, sample_width=2, channels=1
