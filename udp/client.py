@@ -20,7 +20,6 @@ def main():
 
     try:
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udp_socket.sendto(b'hello', (host, port))
 
         ip_addresses = None
         def listen_for_data():
@@ -36,6 +35,7 @@ def main():
             print(ip_addresses)
 
         threading.Thread(target=listen_for_data).start()
+        udp_socket.sendto(b'hello', (host, port))
 
         # threading.Thread(
         #     target=ct.send_audio, args=(udp_socket, data, port)
