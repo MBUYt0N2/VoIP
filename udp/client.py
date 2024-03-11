@@ -26,9 +26,9 @@ def main():
         print(data.decode())
 
         threading.Thread(
-            target=ct.send_audio, args=(udp_socket, socket.inet_ntoa(data), port)
+            target=ct.send_audio, args=(udp_socket, data, port)
         ).start()
-        threading.Thread(target=ct.receive_audio, args=(udp_socket, socket.inet_ntoa(data), port)).start()
+        threading.Thread(target=ct.receive_audio, args=(udp_socket, data, port)).start()
 
     except ConnectionRefusedError:
         print("Connection failed. Is the server running?")
