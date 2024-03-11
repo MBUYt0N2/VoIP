@@ -23,7 +23,8 @@ def main():
         udp_socket.sendto(b'hello', (host, port))
 
         ip_addresses = None
-        def listen_for_data(ip_addresses):
+        def listen_for_data():
+            nonlocal ip_addresses
             while True:
                 if ip_addresses:
                     break
@@ -31,7 +32,7 @@ def main():
                 ip_addresses = data.decode().split(",")
             print(ip_addresses)
 
-        threading.Thread(target=listen_for_data, args=(ip_addresses,)).start()
+        threading.Thread(target=listen_for_data).start()
 
         # threading.Thread(
         #     target=ct.send_audio, args=(udp_socket, data, port)
