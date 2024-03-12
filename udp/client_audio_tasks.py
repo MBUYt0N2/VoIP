@@ -15,7 +15,7 @@ def send_audio(s, host, port):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes()
+        data = indata.astype(np.float32)
         # encoded_audio = pydub.AudioSegment(
         #     data, frame_rate=48000, sample_width=2, channels=1
         # )
