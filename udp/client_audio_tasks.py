@@ -59,9 +59,9 @@ def receive_audio(s1, host, port):
                 decoded_audio = g711.decode_ulaw(decoded_data)
                 audio_buffer.put(decoded_audio)
                 print(decoded_audio[:5])
-            except:
-                print("Failed to decode packets")
-            packets = []
+            except Exception as e:
+                print("Failed to decode packets", str(e))
+                packets = []
 
     print("done")
 
