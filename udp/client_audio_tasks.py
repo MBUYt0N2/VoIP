@@ -7,7 +7,8 @@ from zfec import easyfec
 
 frames = []
 audio_buffer = queue.Queue()
-fec = easyfec.Encoder(10, 12)
+fec_encoder = easyfec.Encoder(10, 12)
+fec_decoder = easyfec.Decoder(10, 12)
 last_received_audio = None
 
 def send_audio(s, host, port):
@@ -18,7 +19,7 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        packets = fec.encode(encoded_audio)
+        packets = fec_encoder.encode(encoded_audio)
         for packet in packets:
             s.sendto(packet, (host, port))
 
@@ -55,7 +56,7 @@ def receive_audio(s1, host, port):
         packets.append(data)
         if len(packets) >= 12:  # 10 data packets + 2 FEC packets
             try:
-                decoded_data = fec.decode(packets)
+                decoded_data = fec_decoder.decode(packets)
                 decoded_audio = g711.decode_ulaw(decoded_data)
                 audio_buffer.put(decoded_audio)
                 print(decoded_audio[:5])
