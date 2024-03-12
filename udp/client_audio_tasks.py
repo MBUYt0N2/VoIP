@@ -3,11 +3,11 @@ import numpy as np
 import queue
 import socket
 import g711
-from fec import FEC
+from zfec import easyfec
 
 frames = []
 audio_buffer = queue.Queue()
-fec = FEC(10, 2)
+fec = easyfec.Encoder(10, 2)
 last_received_audio = None
 
 def send_audio(s, host, port):
