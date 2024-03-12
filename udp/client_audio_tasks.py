@@ -19,9 +19,9 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        packets = fec_encoder.encode(encoded_audio)
+        sharenums, padlen, packets = fec_encoder.encode(encoded_audio)
         for packet in packets:
-            s.sendto(packet, (host, port))
+            s.sendto(packet + bytes([sharenums, padlen]), (host, port))
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
@@ -53,10 +53,12 @@ def receive_audio(s1, host, port):
         if data == b"end":
             break
 
-        packets.append(data)
+        packets.append(data[:-2])
         if len(packets) >= 12:  # 10 data packets + 2 FEC packets
             try:
-                decoded_data = fec_decoder.decode(packets)
+                sharenums = data[-2]
+                padlen = data[-1]
+                decoded_data = fec_decoder.decode(packets, sharenums, padlen)
                 decoded_audio = g711.decode_ulaw(decoded_data)
                 audio_buffer.put(decoded_audio)
                 print(decoded_audio[:5])
