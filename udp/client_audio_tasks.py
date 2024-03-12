@@ -3,10 +3,14 @@ import numpy as np
 import queue
 import pydub
 import socket
+import opuslib
 
 frames = []
+frames_per_buffer = 1024
 audio_buffer = queue.Queue()
 
+opus_encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
+opus_decoder = opuslib.Decoder(48000, 1)
 
 def send_audio(s, host, port):
     samplerate = 48000
@@ -15,10 +19,11 @@ def send_audio(s, host, port):
 
     def callback(indata, frames, time, status):
         data = indata.tobytes()
-        encoded_audio = pydub.AudioSegment(
-            data, frame_rate=48000, sample_width=2, channels=1
-        )
-        s.sendto(encoded_audio.raw_data, (host, port))
+        # encoded_audio = pydub.AudioSegment(
+        #     data, frame_rate=48000, sample_width=2, channels=1
+        # )
+        encoded_audio = opus_encoder.encode(data, frames_per_buffer)
+        s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
@@ -45,10 +50,12 @@ def receive_audio(s1, host, port):
         data, addr = s1.recvfrom(16384)
         if data == b"end":
             break
-        g711_encoded_audio = pydub.AudioSegment(
-            data, frame_rate=samplerate, sample_width=2, channels=1
-        )
-        decoded_audio = np.frombuffer(g711_encoded_audio.raw_data, dtype=np.int16)
+        # g711_encoded_audio = pydub.AudioSegment(
+        #     data, frame_rate=samplerate, sample_width=2, channels=1
+        # )
+
+        decoded_audio = opus_decoder.decode(data, frames_per_buffer)
+        # decoded_audio = np.frombuffer(g711_encoded_audio.raw_data, dtype=np.int16)
 
         audio_buffer.put(decoded_audio)
         print(decoded_audio[:5])
