@@ -3,11 +3,12 @@ import numpy as np
 import queue
 import socket
 import g711
+from fec import FEC
 
 frames = []
 audio_buffer = queue.Queue()
+fec = FEC(10, 2)
 last_received_audio = None
-
 
 def send_audio(s, host, port):
     samplerate = 48000
@@ -17,7 +18,9 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        s.sendto(encoded_audio, (host, port))
+        packets = fec.encode(encoded_audio.tobytes())
+        for packet in packets:
+            s.sendto(packet, (host, port))
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
@@ -42,20 +45,25 @@ def receive_audio(s1, host, port):
 
     stream.start()
 
+    packets = []  # Define the packets list here
+
     while True:
         data, addr = s1.recvfrom(16384)
         if data == b"end":
             break
 
-        if data:
-            decoded_audio = g711.decode_ulaw(data)
-            last_received_audio = decoded_audio
-        else:
-            # If no data was received, use the last received audio
-            decoded_audio = last_received_audio
-
-        audio_buffer.put(decoded_audio)
-        print(decoded_audio[:5])
+        packets.append(data)
+        if len(packets) >= 12:  # 10 data packets + 2 FEC packets
+            try:
+                decoded_data = fec.decode(packets)
+                decoded_audio = g711.decode_ulaw(
+                    np.frombuffer(decoded_data, dtype=np.float32)
+                )
+                audio_buffer.put(decoded_audio)
+                print(decoded_audio[:5])
+            except:
+                print("Failed to decode packets")
+            packets = []
 
     print("done")
 
