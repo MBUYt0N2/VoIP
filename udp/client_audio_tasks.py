@@ -36,7 +36,7 @@ def receive_audio(s1, host, port):
     s1.bind(("", 9000))
     global audio_buffer
     samplerate = 48000
-    dtype = "int16"
+    dtype = "float32"
     channels = 1
     stream = sd.OutputStream(
         callback=audio_callback, samplerate=samplerate, channels=channels, dtype=dtype
