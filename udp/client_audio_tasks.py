@@ -19,7 +19,7 @@ def send_audio(s, host, port):
         # encoded_audio = pydub.AudioSegment(
         #     data, frame_rate=48000, sample_width=2, channels=1
         # )
-        encoded_audio = g711.encode_ulaw(data)
+        encoded_audio = g711.encode_alaw(data)
         s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
@@ -54,7 +54,7 @@ def receive_audio(s1, host, port):
 
         # decoded_audio = np.frombuffer(encoded_audio.raw_data, dtype=np.int16)
 
-        decoded_audio = g711.decode_ulaw(data)
+        decoded_audio = g711.decode_alaw(data)
         audio_buffer.put(decoded_audio)
         print(decoded_audio[:5])
 
