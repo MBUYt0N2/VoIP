@@ -18,7 +18,7 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        packets = fec.encode(encoded_audio.tobytes())
+        packets = fec.encode(encoded_audio)
         for packet in packets:
             s.sendto(packet, (host, port))
 
@@ -56,9 +56,7 @@ def receive_audio(s1, host, port):
         if len(packets) >= 12:  # 10 data packets + 2 FEC packets
             try:
                 decoded_data = fec.decode(packets)
-                decoded_audio = g711.decode_ulaw(
-                    np.frombuffer(decoded_data, dtype=np.float32)
-                )
+                decoded_audio = g711.decode_ulaw(decoded_data)
                 audio_buffer.put(decoded_audio)
                 print(decoded_audio[:5])
             except:
