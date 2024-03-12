@@ -4,6 +4,7 @@ import queue
 import pydub
 import socket
 import opuslib
+import ctypes
 
 frames = []
 frames_per_buffer = 1024
@@ -12,19 +13,20 @@ audio_buffer = queue.Queue()
 opus_encoder = opuslib.Encoder(48000, 1, opuslib.APPLICATION_AUDIO)
 opus_decoder = opuslib.Decoder(48000, 1)
 
+
 def send_audio(s, host, port):
     samplerate = 48000
     duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.astype("int16")
-        # encoded_audio = pydub.AudioSegment(
-        #     data, frame_rate=48000, sample_width=2, channels=1
-        # )
-        num_sampls = len(data)
-        encoded_audio = opus_encoder.encode(data, num_sampls)
-        # encoded_audio = opus_encoder.encode(data, frames_per_buffer)
+        data = indata.astype("int16")  # Convert the data to int16
+        data = data.flatten()  # Flatten the array to 1D
+        data_ctypes = (ctypes.c_int16 * len(data))(*data)  # Convert the array to ctypes
+        num_samples = len(data)
+        encoded_audio = opus_encoder.encode(
+            data_ctypes, num_samples
+        )  # Pass the ctypes array to the encode function
         s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
@@ -34,6 +36,7 @@ def send_audio(s, host, port):
 
     print("Recording finished.")
     s.sendto(b"end", (host, port))
+
 
 def receive_audio(s1, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
