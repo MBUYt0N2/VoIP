@@ -1,12 +1,12 @@
 import sounddevice as sd
 import numpy as np
 import queue
-import pydub
 import socket
 import g711
 
 frames = []
 audio_buffer = queue.Queue()
+last_received_audio = None
 
 
 def send_audio(s, host, port):
@@ -16,10 +16,7 @@ def send_audio(s, host, port):
 
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
-        # encoded_audio = pydub.AudioSegment(
-        #     data, frame_rate=48000, sample_width=2, channels=1
-        # )
-        encoded_audio = g711.encode_alaw(data)
+        encoded_audio = g711.encode_ulaw(data)
         s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
@@ -35,6 +32,7 @@ def receive_audio(s1, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s1.bind(("", 9000))
     global audio_buffer
+    global last_received_audio
     samplerate = 48000
     dtype = "float32"
     channels = 1
@@ -48,13 +46,14 @@ def receive_audio(s1, host, port):
         data, addr = s1.recvfrom(16384)
         if data == b"end":
             break
-        # encoded_audio = pydub.AudioSegment(
-        #     data, frame_rate=samplerate, sample_width=2, channels=1
-        # )
 
-        # decoded_audio = np.frombuffer(encoded_audio.raw_data, dtype=np.int16)
+        if data:
+            decoded_audio = g711.decode_ulaw(data)
+            last_received_audio = decoded_audio
+        else:
+            # If no data was received, use the last received audio
+            decoded_audio = last_received_audio
 
-        decoded_audio = g711.decode_alaw(data)
         audio_buffer.put(decoded_audio)
         print(decoded_audio[:5])
 
