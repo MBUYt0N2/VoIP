@@ -7,7 +7,7 @@ from zfec import easyfec
 
 frames = []
 audio_buffer = queue.Queue()
-fec = easyfec.Encoder(10, 2)
+fec = easyfec.Encoder(10, 12)
 last_received_audio = None
 
 def send_audio(s, host, port):
