@@ -18,11 +18,13 @@ def send_audio(s, host, port):
     print("Recording...")
 
     def callback(indata, frames, time, status):
-        data = indata.tobytes()
+        data = indata.astype("int16")
         # encoded_audio = pydub.AudioSegment(
         #     data, frame_rate=48000, sample_width=2, channels=1
         # )
-        encoded_audio = opus_encoder.encode(data, frames_per_buffer)
+        num_sampls = len(data)
+        encoded_audio = opus_encoder.encode(data, num_sampls)
+        # encoded_audio = opus_encoder.encode(data, frames_per_buffer)
         s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
