@@ -29,7 +29,7 @@ def send_audio(s, host, port):
             sd.sleep(1000)
 
 
-def receive_audio(s1, host, port):
+def receive_audio(s, host, port):
     s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s1.bind(("", 9000))
     global audio_buffer
