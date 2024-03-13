@@ -9,6 +9,10 @@ audio_buffer = queue.Queue()
 last_received_audio = None
 
 
+def end_call(s, host, port):
+    s.sendto(b"end", (host, port))
+
+
 def send_audio(s, host, port):
     samplerate = 48000
     print("Recording...")
@@ -23,9 +27,6 @@ def send_audio(s, host, port):
     ):
         while True:
             sd.sleep(1000)
-
-    print("Recording finished.")
-    s.sendto(b"end", (host, port))
 
 
 def receive_audio(s1, host, port):
@@ -57,6 +58,7 @@ def receive_audio(s1, host, port):
     print("done")
 
     stream.stop()
+    s1.close()
 
 
 def audio_callback(outdata, frames, time, status):
