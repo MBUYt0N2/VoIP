@@ -3,13 +3,11 @@ import numpy as np
 import queue
 import socket
 import g711
-from zfec import easyfec
 
 frames = []
 audio_buffer = queue.Queue()
-fec_encoder = easyfec.Encoder(10, 12)
-fec_decoder = easyfec.Decoder(10, 12)
 last_received_audio = None
+
 
 def send_audio(s, host, port):
     samplerate = 48000
@@ -18,9 +16,7 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        sharenums, padlen, packets, _ = fec_encoder.encode(encoded_audio)
-        for packet in packets:
-            s.sendto(packet + bytes([sharenums, padlen]), (host, port))
+        s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
@@ -46,25 +42,17 @@ def receive_audio(s1, host, port):
 
     stream.start()
 
-    packets = []  # Define the packets list here
-
     while True:
         data, addr = s1.recvfrom(16384)
         if data == b"end":
             break
 
-        packets.append(data[:-2])
-        if len(packets) >= 12:  # 10 data packets + 2 FEC packets
-            try:
-                sharenums = data[-2]
-                padlen = data[-1]
-                decoded_data = fec_decoder.decode(packets, sharenums, padlen)
-                decoded_audio = g711.decode_ulaw(decoded_data)
-                audio_buffer.put(decoded_audio)
-                print(decoded_audio[:5])
-            except Exception as e:
-                print("Failed to decode packets", str(e))
-                packets = []
+        try:
+            decoded_audio = g711.decode_ulaw(data)
+            audio_buffer.put(decoded_audio)
+            print(decoded_audio[:5])
+        except Exception as e:
+            print("Failed to decode packets", str(e))
 
     print("done")
 
