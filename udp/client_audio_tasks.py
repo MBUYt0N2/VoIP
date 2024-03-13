@@ -18,7 +18,7 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        sharenums, padlen, packets = fec_encoder.encode(encoded_audio)
+        sharenums, padlen, packets, _ = fec_encoder.encode(encoded_audio)
         for packet in packets:
             s.sendto(packet + bytes([sharenums, padlen]), (host, port))
 
