@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Call Screen</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+    <button id="closeButton">Close</button>
+
+    <script>
+    $(document).ready(function(){
+        $("#startButton").click(function(){
+            $.post("/start-audio", function(data, status){
+                console.log("Data: " + data + "\nStatus: " + status);
+            });
+        });
+        $("#stopButton").click(function(){
+            $.post("/stop-audio", function(data, status){
+                console.log("Data: " + data + "\nStatus: " + status);
+            });
+        });
+        $("#closeButton").click(function(){
+            $.post("/close-socket", function(data, status){
+                console.log("Data: " + data + "\nStatus: " + status);
+            });
+        });
+    });
+    </script>
+</body>
+</html>
