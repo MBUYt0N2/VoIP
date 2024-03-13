@@ -40,5 +40,3 @@ def main():
 
     except ConnectionRefusedError:
         print("Connection failed. Is the server running?")
-
-main()

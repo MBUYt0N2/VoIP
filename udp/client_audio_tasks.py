@@ -13,7 +13,6 @@ last_received_audio = None
 
 def send_audio(s, host, port):
     samplerate = 48000
-    duration = 50
     print("Recording...")
 
     def callback(indata, frames, time, status):
@@ -26,7 +25,8 @@ def send_audio(s, host, port):
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="int16"
     ):
-        sd.sleep(duration * 1000)
+        while True:
+            sd.sleep(1000)
 
     print("Recording finished.")
     s.sendto(b"end", (host, port))
