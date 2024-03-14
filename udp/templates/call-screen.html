@@ -16,8 +16,8 @@
                 console.log("Data: " + data + "\nStatus: " + status);
             });
         });
-        $("#stopButton").click(function(){
-            $.post("/stop-audio", function(data, status){
+        $("#muteButton").click(function(){
+            $.post("/mute-audio", function(data, status){
                 console.log("Data: " + data + "\nStatus: " + status);
             });
         });
