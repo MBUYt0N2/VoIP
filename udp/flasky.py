@@ -2,13 +2,13 @@ from flask import Flask, render_template, redirect, url_for
 import threading
 import client
 from flask_cors import CORS
+import client_audio_tasks as ct
 
 
 app = Flask(__name__)
 CORS(
     app, resources={r"/run-script": {"origins": "*"}}
-)  # Replace with your actual frontend domain
-
+)
 
 @app.route("/")
 def home():
@@ -33,7 +33,7 @@ def start_audio():
 
 @app.route("/stop-audio", methods=["POST"])
 def stop_audio():
-    # You'll need to implement a way to stop the audio threads
+    ct.pause()
     return "Stopped audio"
 
 

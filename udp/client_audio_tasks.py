@@ -8,6 +8,7 @@ frames = []
 audio_buffer = queue.Queue()
 last_received_audio = None
 sending = True
+pauser = False
 
 
 class StreamEnd(Exception):
@@ -18,6 +19,11 @@ def end_call(s):
     global sending
     sending = False
     s.close()
+
+
+def pause():
+    global pauser
+    pauser = True
 
 
 def send_audio(s, host, port):
@@ -31,7 +37,10 @@ def send_audio(s, host, port):
         encoded_audio = g711.encode_ulaw(data)
         if sending:
             s.sendto(encoded_audio, (host, port))
-        else:
+        elif pauser:
+            print("Pausing")
+            raise sd.CallbackStop
+        elif not sending:
             print("Connection closed")
             raise sd.CallbackStop
 
