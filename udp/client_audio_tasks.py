@@ -23,7 +23,10 @@ def send_audio(s, host, port):
     def callback(indata, frames, time, status):
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        s.sendto(encoded_audio, (host, port))
+        try:
+            s.sendto(encoded_audio, (host, port))
+        except Exception as e:
+            print("Connection closed")
 
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="float32"
