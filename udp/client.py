@@ -42,5 +42,6 @@ def listen_for_data():
 
 
 def close_sock():
-    udp_socket.close()
     ct.end_call()
+    udp_socket.close()
+    
