@@ -7,14 +7,17 @@ import g711
 frames = []
 audio_buffer = queue.Queue()
 last_received_audio = None
-
+sending = True
 
 def end_call(s, host, port):
     s.sendto(b"end", (host, port))
+    global sending
+    sending = False
     s.close()
 
 
 def send_audio(s, host, port):
+    global sending
     samplerate = 48000
     print("Recording...")
 
@@ -26,7 +29,7 @@ def send_audio(s, host, port):
     with sd.InputStream(
         callback=callback, channels=1, samplerate=samplerate, dtype="float32"
     ):
-        while True:
+        while sending:
             sd.sleep(1000)
 
 
