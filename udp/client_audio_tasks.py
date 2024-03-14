@@ -37,13 +37,11 @@ def send_audio(s, host, port):
         global sending
         data = indata.astype(np.float32)
         encoded_audio = g711.encode_ulaw(data)
-        if sending:
-            s.sendto(encoded_audio, (host, port))
-        elif pauser:
+        if pauser:
             print("Pausing")
-            time.sleep(2)
             raise sd.CallbackStop
-            
+        elif sending:
+            s.sendto(encoded_audio, (host, port))
         elif not sending:
             print("Connection closed")
             raise sd.CallbackStop
@@ -60,6 +58,7 @@ def receive_audio(s, host, port):
     s1.bind(("", 9000))
     global audio_buffer
     global last_received_audio
+    global pauser
     samplerate = 48000
     dtype = "float32"
     channels = 1
@@ -69,7 +68,7 @@ def receive_audio(s, host, port):
 
     stream.start()
 
-    while sending:
+    while sending and not pauser:
         data, addr = s1.recvfrom(16384)
         try:
             decoded_audio = g711.decode_ulaw(data)
