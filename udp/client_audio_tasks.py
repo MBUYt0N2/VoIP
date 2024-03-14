@@ -9,6 +9,10 @@ audio_buffer = queue.Queue()
 last_received_audio = None
 sending = True
 
+class StreamEnd(Exception):
+    pass
+
+
 def end_call(s):
     global sending
     sending = False
@@ -27,12 +31,16 @@ def send_audio(s, host, port):
             s.sendto(encoded_audio, (host, port))
         except Exception as e:
             print("Connection closed")
+            raise StreamEnd
 
-    with sd.InputStream(
-        callback=callback, channels=1, samplerate=samplerate, dtype="float32"
-    ):
-        while sending:
-            sd.sleep(1000)
+    try:
+        with sd.InputStream(
+            callback=callback, channels=1, samplerate=samplerate, dtype="float32"
+        ):
+            while sending:
+                sd.sleep(1000)
+    except StreamEnd:
+        print("Stream ended")
 
 
 def receive_audio(s, host, port):
