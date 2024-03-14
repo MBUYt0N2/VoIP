@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Call Screen</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</head>
-<body>
-    <button id="startButton">Start</button>
-    <button id="muteButton">Mute</button>
-    <button id="closeButton">Close</button>
+	<head>
+		<title>Call Screen</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<button id="startButton">Start</button>
+		<button id="muteButton">Mute</button>
+		<button id="closeButton">Close</button>
 
-    <script>
-    $(document).ready(function(){
-        $("#startButton").click(function(){
-            $.post("/start-audio", function(data, status){
-                console.log("Data: " + data + "\nStatus: " + status);
-            });
-        });
-        $("#muteButton").click(function(){
-            $.post("/mute-audio", function(data, status){
-                console.log("Data: " + data + "\nStatus: " + status);
-            });
-        });
-        $("#closeButton").click(function(){
-            $.post("/close-socket", function(data, status){
-                console.log("Data: " + data + "\nStatus: " + status);
-            });
-        });
-    });
-    </script>
-</body>
+		<script>
+			$(document).ready(function () {
+				$("#startButton").click(function () {
+					$.post("/start-audio", function (data, status) {
+						console.log("Data: " + data + "\nStatus: " + status);
+					});
+				});
+				$("#muteButton").click(function () {
+					$.post("/mute-audio", function (data, status) {
+						console.log("Data: " + data + "\nStatus: " + status);
+						// Toggle the button text
+						var btn = $("#muteButton");
+						btn.text() === "Mute"
+							? btn.text("Unmute")
+							: btn.text("Mute");
+					});
+				});
+				$("#closeButton").click(function () {
+					$.post("/close-socket", function (data, status) {
+						console.log("Data: " + data + "\nStatus: " + status);
+					});
+				});
+			});
+		</script>
+	</body>
 </html>
