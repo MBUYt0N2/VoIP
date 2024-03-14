@@ -31,10 +31,10 @@ def start_audio():
     return "Started audio"
 
 
-@app.route("/stop-audio", methods=["POST"])
-def stop_audio():
-    ct.pause()
-    return "Stopped audio"
+@app.route("/mute-audio", methods=["POST"])
+def mute_audio():
+    ct.mute()
+    return "muted audio"
 
 
 @app.route("/close-socket", methods=["POST"])
