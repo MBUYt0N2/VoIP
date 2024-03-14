@@ -43,5 +43,4 @@ def listen_for_data():
 
 def close_sock():
     ct.end_call(udp_socket, ip_addresses[0], 9000)
-    udp_socket.close()
     
