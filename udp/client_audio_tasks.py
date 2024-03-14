@@ -28,6 +28,7 @@ def pause():
 
 def send_audio(s, host, port):
     global sending
+    global pauser
     samplerate = 48000
     print("Recording...")
 
