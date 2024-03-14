@@ -23,7 +23,7 @@ def send_audio(s, host, port):
         s.sendto(encoded_audio, (host, port))
 
     with sd.InputStream(
-        callback=callback, channels=1, samplerate=samplerate, dtype="int16"
+        callback=callback, channels=1, samplerate=samplerate, dtype="float32"
     ):
         while True:
             sd.sleep(1000)
