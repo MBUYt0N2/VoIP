@@ -11,6 +11,7 @@ last_received_audio = None
 
 def end_call(s, host, port):
     s.sendto(b"end", (host, port))
+    s.close()
 
 
 def send_audio(s, host, port):
