@@ -3,6 +3,7 @@ import numpy as np
 import queue
 import socket
 import g711
+import time
 
 frames = []
 audio_buffer = queue.Queue()
@@ -40,7 +41,9 @@ def send_audio(s, host, port):
             s.sendto(encoded_audio, (host, port))
         elif pauser:
             print("Pausing")
+            time.sleep(2)
             raise sd.CallbackStop
+            
         elif not sending:
             print("Connection closed")
             raise sd.CallbackStop
