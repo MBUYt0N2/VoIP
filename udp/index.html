@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calling Interface</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .call-status {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+        }
+        .button {
+            padding: 10px;
+            margin: 0 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .button:hover {
+            background-color: #e0e0e0;
+        }
+        .mute, .unmute, .connect, .disconnect {
+            color: #333;
+        }
+        .mute {
+            color: #cc0000;
+        }
+        .unmute {
+            color: #4caf50;
+        }
+        .connect {
+            color: #1e88e5;
+        }
+        .disconnect {
+            color: #d32f2f;
+        }
+        .icon {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calling Interface</h1>
+        <p class="call-status">Call Status: {% if connected %}<span class="connected">&#9679;</span> Connected{% else %}<span class="disconnected">&#9675;</span> Disconnected{% endif %}</p>
+        <div class="buttons-container">
+                <button class="button mute"><span class="icon">&#128266;</span></button>
+                <button class="button unmute"><span class="icon">&#128263;</span></button>
+                <button class="button connect"><span class="icon">&#128222;</span></button>
+                <button class="button disconnect"><span class="icon">&#128224;</span></button>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+            $(".button connect").click(function () {
+                $.post("/connect", function (data, status) {
+                    console.log("Data: " + data + "\nStatus: " + status);
+                });
+            });
+            $(".button mute").click(function () {
+                $.post("/mute", function (data, status) {
+                    console.log("Data: " + data + "\nStatus: " + status);
+                });
+            });
+
+                $(".button unmute").click(function () {
+                $.post("/unmute", function (data, status) {
+                    console.log("Data: " + data + "\nStatus: " + status);
+                });
+            });
+
+            $(".button disconnect").click(function () {
+                $.post("/disconnect", function (data, status) {
+                    console.log("Data: " + data + "\nStatus: " + status);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
