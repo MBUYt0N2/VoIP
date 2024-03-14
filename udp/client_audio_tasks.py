@@ -9,8 +9,7 @@ audio_buffer = queue.Queue()
 last_received_audio = None
 sending = True
 
-def end_call(s, host, port):
-    s.sendto(b"end", (host, port))
+def end_call(s):
     global sending
     sending = False
     s.close()
@@ -47,11 +46,8 @@ def receive_audio(s, host, port):
 
     stream.start()
 
-    while True:
+    while sending:
         data, addr = s1.recvfrom(16384)
-        if data == b"end":
-            break
-
         try:
             decoded_audio = g711.decode_ulaw(data)
             audio_buffer.put(decoded_audio)
@@ -63,6 +59,7 @@ def receive_audio(s, host, port):
 
     stream.stop()
     s1.close()
+    s.close()
 
 
 def audio_callback(outdata, frames, time, status):
