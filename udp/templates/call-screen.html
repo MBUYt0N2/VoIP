@@ -3,12 +3,77 @@
 	<head>
 		<title>Call Screen</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				background-color: #f5f5f5;
+			}
+			.container {
+				max-width: 500px;
+				margin: 20px auto;
+				padding: 20px;
+				background-color: #f0f0f0;
+				border-radius: 8px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+				text-align: center;
+			}
+			h1 {
+				color: #333;
+			}
+			.call-status {
+				margin-bottom: 20px;
+				font-size: 18px;
+				color: #333;
+			}
+			.buttons-container {
+				display: flex;
+				justify-content: center;
+			}
+			.button {
+				padding: 10px;
+				margin: 0 10px;
+				font-size: 16px;
+				border: none;
+				border-radius: 50%;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				background-color: #fff;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
+			.button:hover {
+				background-color: #e0e0e0;
+			}
+			#muteButton,
+			#startButton,
+			#closeButton {
+				color: #333;
+			}
+			.muteButton {
+				color: #cc0000;
+			}
+			#startButton {
+				color: #1e88e5;
+			}
+			#closeButton {
+				color: #d32f2f;
+			}
+			.icon {
+				font-size: 24px;
+			}
+		</style>
 	</head>
 	<body>
-		<button id="startButton">Start</button>
-		<button id="muteButton">Mute</button>
-		<button id="closeButton">Close</button>
+		<div class="container">
+			<h1>Calling Interface</h1>
 
+			<div class="buttons-container">
+				<button id="startButton">Start</button>
+				<button id="muteButton">Mute</button>
+				<button id="closeButton">Close</button>
+			</div>
+		</div>
 		<script>
 			$(document).ready(function () {
 				$("#startButton").click(function () {
