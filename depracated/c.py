@@ -78,6 +78,7 @@
 #     samplerate=framerate, channels=nchannels, callback=audio_callback
 # )
 # stream.start()
+# fuck this
 
 # # Wait for the stream to finish playing the audio
 # while stream.active:
